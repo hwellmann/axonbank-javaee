@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+    <persistence-unit name="axonbank">
+
+        <!-- JNDI name for data source. A data source with this name must be configured in the WildFly 
+            server. -->
+<!--         <jta-data-source>jdbc/noma</jta-data-source> -->
+
+        <class>org.axonframework.eventsourcing.eventstore.jpa.DomainEventEntry</class>
+        <class>org.axonframework.eventsourcing.eventstore.jpa.SnapshotEventEntry</class>
+        <class>org.axonframework.eventhandling.saga.repository.jpa.AssociationValueEntry</class>
+        <class>org.axonframework.eventhandling.saga.repository.jpa.SagaEntry</class>
+        <class>org.axonframework.eventhandling.tokenstore.jpa.TokenEntry</class>
+
+        <properties>
+        
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+
+        </properties>
+    </persistence-unit>
+
+</persistence>
