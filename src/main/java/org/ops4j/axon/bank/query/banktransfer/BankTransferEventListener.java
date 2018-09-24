@@ -16,6 +16,7 @@
 
 package org.ops4j.axon.bank.query.banktransfer;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.axonframework.eventhandling.EventHandler;
@@ -23,6 +24,7 @@ import org.ops4j.axon.bank.api.banktransfer.BankTransferCompletedEvent;
 import org.ops4j.axon.bank.api.banktransfer.BankTransferCreatedEvent;
 import org.ops4j.axon.bank.api.banktransfer.BankTransferFailedEvent;
 
+@ApplicationScoped
 public class BankTransferEventListener {
 
     @Inject

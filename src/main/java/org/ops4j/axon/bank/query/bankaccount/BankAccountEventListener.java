@@ -29,7 +29,8 @@ public class BankAccountEventListener {
 
     @Inject
     private BankAccountRepository repository;
-    //private SimpMessageSendingOperations messagingTemplate;
+
+    // private SimpMessageSendingOperations messagingTemplate;
 
     @EventHandler
     public void on(BankAccountCreatedEvent event) {
@@ -59,8 +60,8 @@ public class BankAccountEventListener {
     }
 
     private void broadcastUpdates() {
-        Iterable<BankAccountEntry> bankAccountEntries = repository.findAll();
-        //messagingTemplate.convertAndSend("/topic/bank-accounts.updates", bankAccountEntries);
+        // Iterable<BankAccountEntry> bankAccountEntries = repository.findAll();
+        // messagingTemplate.convertAndSend("/topic/bank-accounts.updates", bankAccountEntries);
     }
 
 }

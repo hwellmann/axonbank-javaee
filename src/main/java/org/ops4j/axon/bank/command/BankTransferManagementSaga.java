@@ -18,9 +18,9 @@ package org.ops4j.axon.bank.command;
 
 import static org.axonframework.commandhandling.GenericCommandMessage.asCommandMessage;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.axonframework.cdi.stereotype.Saga;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.callbacks.LoggingCallback;
 import org.axonframework.eventhandling.saga.EndSaga;
@@ -38,7 +38,7 @@ import org.ops4j.axon.bank.api.banktransfer.BankTransferCreatedEvent;
 import org.ops4j.axon.bank.api.banktransfer.MarkBankTransferCompletedCommand;
 import org.ops4j.axon.bank.api.banktransfer.MarkBankTransferFailedCommand;
 
-@Dependent
+@Saga
 public class BankTransferManagementSaga {
 
     @Inject

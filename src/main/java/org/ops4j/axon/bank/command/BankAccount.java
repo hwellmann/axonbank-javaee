@@ -18,6 +18,7 @@ package org.ops4j.axon.bank.command;
 
 import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
 
+import org.axonframework.cdi.stereotype.Aggregate;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.model.AggregateIdentifier;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -35,7 +36,7 @@ import org.ops4j.axon.bank.api.bankaccount.SourceBankAccountDebitRejectedEvent;
 import org.ops4j.axon.bank.api.bankaccount.SourceBankAccountDebitedEvent;
 import org.ops4j.axon.bank.api.bankaccount.WithdrawMoneyCommand;
 
-// @Aggregate
+@Aggregate
 public class BankAccount {
 
     @AggregateIdentifier

@@ -18,6 +18,7 @@ package org.ops4j.axon.bank.command;
 
 import static org.axonframework.commandhandling.model.AggregateLifecycle.apply;
 
+import org.axonframework.cdi.stereotype.Aggregate;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.model.AggregateIdentifier;
 import org.axonframework.eventhandling.EventHandler;
@@ -28,7 +29,7 @@ import org.ops4j.axon.bank.api.banktransfer.CreateBankTransferCommand;
 import org.ops4j.axon.bank.api.banktransfer.MarkBankTransferCompletedCommand;
 import org.ops4j.axon.bank.api.banktransfer.MarkBankTransferFailedCommand;
 
-// @Aggregate
+@Aggregate
 public class BankTransfer {
 
     @AggregateIdentifier

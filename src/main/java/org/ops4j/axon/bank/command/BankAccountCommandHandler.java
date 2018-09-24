@@ -18,6 +18,9 @@ package org.ops4j.axon.bank.command;
 
 import static org.axonframework.eventhandling.GenericEventMessage.asEventMessage;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.model.Aggregate;
 import org.axonframework.commandhandling.model.AggregateNotFoundException;
@@ -28,15 +31,14 @@ import org.ops4j.axon.bank.api.bankaccount.DebitSourceBankAccountCommand;
 import org.ops4j.axon.bank.api.bankaccount.DestinationBankAccountNotFoundEvent;
 import org.ops4j.axon.bank.api.bankaccount.SourceBankAccountNotFoundEvent;
 
+@ApplicationScoped
 public class BankAccountCommandHandler {
 
+    @Inject
     private Repository<BankAccount> repository;
-    private EventBus eventBus;
 
-    public BankAccountCommandHandler(Repository<BankAccount> repository, EventBus eventBus) {
-        this.repository = repository;
-        this.eventBus = eventBus;
-    }
+    @Inject
+    private EventBus eventBus;
 
     @CommandHandler
     public void handle(DebitSourceBankAccountCommand command) {

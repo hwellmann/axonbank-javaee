@@ -50,7 +50,7 @@ public class BankTransferTest {
         assertThat(client.getBankAccount(account1.getId()).getBalance()).isEqualTo(2000);
 
         client.transfer(100, account1.getAxonBankAccountId(), account0.getAxonBankAccountId());
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         assertThat(client.getBankAccount(account0.getId()).getBalance()).isEqualTo(1100);
         assertThat(client.getBankAccount(account1.getId()).getBalance()).isEqualTo(1900);

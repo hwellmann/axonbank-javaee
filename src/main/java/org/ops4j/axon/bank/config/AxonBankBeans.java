@@ -17,36 +17,30 @@
  */
 package org.ops4j.axon.bank.config;
 
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
+
+import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.jpa.EntityManagerProvider;
-import org.axonframework.common.transaction.TransactionManager;
 import org.axonframework.config.Configuration;
+import org.axonframework.config.Configurer;
 import org.axonframework.config.DefaultConfigurer;
-import org.axonframework.config.EventHandlingConfiguration;
-import org.axonframework.config.SagaConfiguration;
-import org.ops4j.axon.bank.command.BankAccount;
-import org.ops4j.axon.bank.command.BankAccountCommandHandler;
-import org.ops4j.axon.bank.command.BankTransfer;
-import org.ops4j.axon.bank.command.BankTransferManagementSaga;
-import org.ops4j.axon.bank.query.bankaccount.BankAccountEventListener;
+import org.axonframework.messaging.interceptors.BeanValidationInterceptor;
 
 /**
  * @author Harald Wellmann
  *
  */
 @ApplicationScoped
+@Priority(APPLICATION)
 public class AxonBankBeans {
-
-    @Inject
-    private BankAccountEventListener bankAccountEventListener;
 
     @Produces
     @PersistenceContext
@@ -58,32 +52,19 @@ public class AxonBankBeans {
     }
 
     @Produces
+    @Alternative
     @ApplicationScoped
-    Configuration configuration(EntityManagerProvider entityManagerProvider, TransactionManager transactionManager) {
-        EventHandlingConfiguration ehc = new EventHandlingConfiguration().registerEventHandler(c -> bankAccountEventListener);
-
-        return DefaultConfigurer.jpaConfiguration(entityManagerProvider)
-            .configureAggregate(BankAccount.class)
-            .configureAggregate(BankTransfer.class)
-            .configureTransactionManager(c -> transactionManager)
-            .registerCommandHandler(c -> new BankAccountCommandHandler(c.repository(BankAccount.class), c.eventBus()))
-            .registerModule(SagaConfiguration.trackingSagaManager(BankTransferManagementSaga.class))
-            .registerModule(ehc)
-            .buildConfiguration();
-    }
-
-    @Produces
-    @ApplicationScoped
-    @Typed(CommandGateway.class)
-    public CommandGateway commandGateway(Configuration configuration) {
-        return configuration.commandGateway();
+    Configurer defaultConfigurer(EntityManagerProvider entityManagerProvider) {
+        return DefaultConfigurer.jpaConfiguration(entityManagerProvider);
     }
 
     @Produces
     @Typed(CommandBus.class)
+    @Alternative
     @ApplicationScoped
     public CommandBus commandBus(Configuration configuration) {
-        return configuration.commandBus();
+        CommandBus commandBus = configuration.commandBus();
+        commandBus.registerDispatchInterceptor(new BeanValidationInterceptor<>());
+        return commandBus;
     }
-
 }
