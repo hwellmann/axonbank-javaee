@@ -16,8 +16,17 @@
 
 package org.ops4j.axon.bank.query.bankaccount;
 
+import java.util.List;
+
+import javax.annotation.Resource;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSDestinationDefinition;
+import javax.jms.JMSProducer;
+import javax.jms.Topic;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 
 import org.axonframework.eventhandling.EventHandler;
 import org.ops4j.axon.bank.api.bankaccount.BankAccountCreatedEvent;
@@ -25,10 +34,18 @@ import org.ops4j.axon.bank.api.bankaccount.MoneyAddedEvent;
 import org.ops4j.axon.bank.api.bankaccount.MoneySubtractedEvent;
 
 @Dependent
+@JMSDestinationDefinition(name = "java:/jms/topic/bankAccountsUpdates", interfaceName = "javax.jms.Topic", destinationName = "bankAccountsUpdates")
 public class BankAccountEventListener {
 
     @Inject
     private BankAccountRepository repository;
+
+    @Resource
+    private ConnectionFactory connectionFactory;
+
+    @Resource(lookup = "java:/jms/topic/bankAccountsUpdates")
+    private Topic updateTopic;
+
 
     // private SimpMessageSendingOperations messagingTemplate;
 
@@ -60,8 +77,12 @@ public class BankAccountEventListener {
     }
 
     private void broadcastUpdates() {
-        // Iterable<BankAccountEntry> bankAccountEntries = repository.findAll();
-        // messagingTemplate.convertAndSend("/topic/bank-accounts.updates", bankAccountEntries);
+        List<BankAccountEntry> bankAccountEntries = repository.findAll();
+
+        JMSProducer producer = connectionFactory.createContext().createProducer();
+
+        Jsonb jsonb = JsonbBuilder.create();
+        producer.send(updateTopic, jsonb.toJson(bankAccountEntries));
     }
 
 }
