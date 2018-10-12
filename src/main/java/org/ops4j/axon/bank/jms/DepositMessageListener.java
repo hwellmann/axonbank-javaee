@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import javax.jms.JMSDestinationDefinition;
 
 import org.ops4j.axon.bank.rest.BankAccountResource;
-import org.ops4j.axon.bank.rest.dto.BankAccountDto;
+import org.ops4j.axon.bank.rest.dto.DepositDto;
 
 /**
  * @author Harald Wellmann
@@ -32,27 +32,27 @@ import org.ops4j.axon.bank.rest.dto.BankAccountDto;
 @MessageDriven(
     activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationLookup",
-            propertyValue = "jms/queue/bank-accounts.create"),
+            propertyValue = "jms/queue/bank-accounts.deposit"),
         @ActivationConfigProperty(propertyName = "destinationType",
             propertyValue = "javax.jms.Queue"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode",
             propertyValue = "Auto-acknowledge") })
 @JMSDestinationDefinition(
-    name = "java:/jms/queue/bank-accounts.create",
+    name = "java:/jms/queue/bank-accounts.deposit",
     interfaceName = "javax.jms.Queue",
-    destinationName = "bank-accounts.create")
-public class CreateBankAccountMessageListener extends JsonbMessageListener<BankAccountDto> {
+    destinationName = "bank-accounts.deposit")
+public class DepositMessageListener extends JsonbMessageListener<DepositDto> {
 
     @Inject
     private BankAccountResource bankAccountResource;
 
     @Override
-    protected void processPayload(BankAccountDto payload) {
-        bankAccountResource.create(payload);
+    protected void processPayload(DepositDto payload) {
+        bankAccountResource.deposit(payload);
     }
 
     @Override
-    protected Class<BankAccountDto> payloadClass() {
-        return BankAccountDto.class;
+    protected Class<DepositDto> payloadClass() {
+        return DepositDto.class;
     }
 }

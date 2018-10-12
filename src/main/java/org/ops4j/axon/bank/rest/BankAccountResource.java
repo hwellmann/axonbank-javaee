@@ -71,8 +71,8 @@ public class BankAccountResource {
 
     @PUT
     @Path("/withdraw")
-    public void withdraw(WithdrawalDto depositDto) {
-        WithdrawMoneyCommand command = new WithdrawMoneyCommand(depositDto.getBankAccountId(), depositDto.getAmount());
+    public void withdraw(WithdrawalDto withdrawalDto) {
+        WithdrawMoneyCommand command = new WithdrawMoneyCommand(withdrawalDto.getBankAccountId(), withdrawalDto.getAmount());
         commandGateway.send(command);
     }
 
