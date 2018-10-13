@@ -32,14 +32,20 @@ import org.ops4j.axon.bank.api.banktransfer.MarkBankTransferFailedCommand;
 @Aggregate
 public class BankTransfer {
 
+    public enum Status {
+        STARTED,
+        FAILED,
+        COMPLETED
+    }
+
+
     @AggregateIdentifier
-    private String BankTransferId;
+    private String bankTransferId;
     private String sourceBankAccountId;
     private String destinationBankAccountId;
     private long amount;
     private Status status;
 
-    @SuppressWarnings("unused")
     protected BankTransfer() {
     }
 
@@ -66,7 +72,7 @@ public class BankTransfer {
 
     @EventHandler
     public void on(BankTransferCreatedEvent event) throws Exception {
-        this.BankTransferId = event.getBankTransferId();
+        this.bankTransferId = event.getBankTransferId();
         this.sourceBankAccountId = event.getSourceBankAccountId();
         this.destinationBankAccountId = event.getDestinationBankAccountId();
         this.amount = event.getAmount();
@@ -83,9 +89,27 @@ public class BankTransfer {
         this.status = Status.FAILED;
     }
 
-    private enum Status {
-        STARTED,
-        FAILED,
-        COMPLETED
+    public String getBankTransferId() {
+        return bankTransferId;
+    }
+
+
+    public String getSourceBankAccountId() {
+        return sourceBankAccountId;
+    }
+
+
+    public String getDestinationBankAccountId() {
+        return destinationBankAccountId;
+    }
+
+
+    public long getAmount() {
+        return amount;
+    }
+
+
+    public Status getStatus() {
+        return status;
     }
 }
