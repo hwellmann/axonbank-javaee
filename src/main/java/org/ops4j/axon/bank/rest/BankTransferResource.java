@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Path("")
+@Path("/bank-transfers")
 public class BankTransferResource {
 
     private static Logger log = LoggerFactory.getLogger(BankTransferResource.class);
@@ -50,21 +50,20 @@ public class BankTransferResource {
     @Inject
     private BankTransferRepository bankTransferRepository;
 
-    @Path("/bank-accounts/{bankAccountId}/bank-transfers")
+    @Path("/bank-account/{bankAccountId}")
     @GET
     public Iterable<BankTransferEntry> bankTransfers(@PathParam("bankAccountId") String bankAccountId) {
         log.info("Retrieve bank transfers for bank account with id {}", bankAccountId);
         return bankTransferRepository.findBySourceBankAccountIdOrDestinationBankAccountId(bankAccountId, bankAccountId);
     }
 
-    @Path("/bank-transfers/{id}")
+    @Path("{id}")
     @GET
     public BankTransferEntry get(@PathParam("id") long id) {
         log.info("Retrieve bank transfer with id {}", id);
         return bankTransferRepository.findBy(id);
     }
 
-    @Path("/bank-transfers")
     @POST
     public void create(BankTransferDto bankTransferDto) {
         log.info("Create bank transfer with payload {}", bankTransferDto);
