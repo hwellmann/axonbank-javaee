@@ -11,10 +11,12 @@
 
     <properties>
         <skipTests>true</skipTests>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <deltaspike.version>1.8.1</deltaspike.version>
         <resteasy.version>3.6.1.Final</resteasy.version>
         <slf4j.version>1.7.7</slf4j.version>
+        <wildfly.version>14.0.1.Final</wildfly.version>
         <version.org.axonframework>3.3.6</version.org.axonframework>
         <org.junit.jupiter.version>5.3.1</org.junit.jupiter.version>
         <org.junit.platform.version>1.3.1</org.junit.platform.version>
@@ -73,6 +75,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jaxrs</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>${org.junit.jupiter.version}</version>
@@ -88,18 +96,6 @@
                 <groupId>org.junit.platform</groupId>
                 <artifactId>junit-platform-launcher</artifactId>
                 <version>${org.junit.platform.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.omnifaces</groupId>
-                <artifactId>omnifaces</artifactId>
-                <version>2.6.8</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.primefaces</groupId>
-                <artifactId>primefaces</artifactId>
-                <version>6.2</version>
             </dependency>
 
             <dependency>
@@ -232,6 +228,12 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-json-binding-provider</artifactId>
             <scope>test</scope>
         </dependency>
@@ -241,7 +243,7 @@
             <artifactId>resteasy-json-p-provider</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
     </dependencies>
 
     <build>
@@ -250,6 +252,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -258,10 +261,106 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.2</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>run</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>unpack-wildfly</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-dist</artifactId>
+                                            <version>${wildfly.version}</version>
+                                            <type>zip</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/wildfly</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-config</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/wildfly/wildfly-${wildfly.version}/standalone/configuration</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/config/wildfly</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-war</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>true</skip>
+                                    <outputDirectory>${project.build.directory}/wildfly/wildfly-${wildfly.version}/standalone/deployments</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <include>${project.build.finalName}.${project.packaging}</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <version>1.2.2.Final</version>
+                        <executions>
+                            <execution>
+                                <id>run</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <jbossHome>${project.build.directory}/wildfly/wildfly-${wildfly.version}</jbossHome>
+                                    <serverConfig>standalone-full.xml</serverConfig>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
