@@ -100,7 +100,7 @@
     <profile>
         <subsystem xmlns="urn:jboss:domain:logging:6.0">
             <console-handler name="CONSOLE">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
                 <formatter>
                     <named-formatter name="COLOR-PATTERN"/>
                 </formatter>
@@ -117,13 +117,13 @@
                 <level name="WARN"/>
             </logger>
             <logger category="org.jboss.as.config">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
             </logger>
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
             <logger category="org.axonframework">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
             </logger>
             <root-logger>
                 <level name="INFO"/>
@@ -517,7 +517,6 @@
                 <http-listener name="default" socket-binding="http" redirect-socket="https" enable-http2="true"/>
                 <https-listener name="https" socket-binding="https" security-realm="ApplicationRealm" enable-http2="true"/>
                 <host name="default-host" alias="localhost">
-                    <location name="/" handler="welcome-content"/>
                     <location name="/stomp" handler="stomp-proxy"/>
                     <http-invoker security-realm="ApplicationRealm"/>
                 </host>

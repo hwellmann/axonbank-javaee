@@ -10,3 +10,6 @@ test-output
 *~
 .idea
 *.iml
+ui/dist
+ui/node
+ui/node_modules

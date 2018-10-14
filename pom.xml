@@ -248,6 +248,15 @@
 
     <build>
         <finalName>axon-bank</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>1.2.2.Final</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -264,7 +273,48 @@
                 <version>3.2.2</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <webResources>
+                        <webResource>
+                            <directory>${project.basedir}/ui/dist/axonbank-ui</directory>
+                        </webResource>
+                    </webResources>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.6</version>
+                <configuration>
+                    <workingDirectory>ui</workingDirectory>
+                    <nodeVersion>v8.10.0</nodeVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-node</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -327,7 +377,6 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>true</skip>
                                     <outputDirectory>${project.build.directory}/wildfly/wildfly-${wildfly.version}/standalone/deployments</outputDirectory>
                                     <resources>
                                         <resource>
@@ -349,7 +398,7 @@
                                 <id>run</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>run</goal>
+                                    <goal>start</goal>
                                 </goals>
                                 <configuration>
                                     <jbossHome>${project.build.directory}/wildfly/wildfly-${wildfly.version}</jbossHome>
